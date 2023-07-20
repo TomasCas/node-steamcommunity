@@ -254,6 +254,127 @@ SteamCommunity.prototype.profileSettings = function(settings, callback) {
 	});
 };
 
+/**
+ * Get craftable badges
+ * @param {function} callback - err, postID
+ */
+SteamCommunity.prototype.craftBadges = async function(callback) {
+	let self = this;
+    this._myProfile("badges", null, async function(err, response, body) {
+        if (err || response.statusCode != 200) {
+			if (callback) {
+				callback(err || new Error('HTTP error ' + response.statusCode));
+			}
+
+			return;
+		}
+        var $ = Cheerio.load(body);
+
+		let badgeData = [];
+
+		$('.badge_progress_info a').each(function(i, elem) {
+			let fullLink = $(this).attr('href');
+			let parts = fullLink.split('/gamecards/');
+			if (parts.length > 1) {
+				badgeData.push({id: parts[1], num: 1});
+			}
+		});
+		let badgesCrafted = 0;
+		let promises = []
+		console.log(badgeData.length);
+
+		for (let badge of badgeData) {
+			let {id} = badge;
+			let b = badge;
+			promises.push(new Promise((resolve, reject) => {
+				this._myProfile(`gamecards/${id}/`, null, function(err, response, body) {
+					if (err || response.statusCode != 200) {
+						console.log(response.statusCode)
+			
+						resolve();
+					}
+
+					let $ = Cheerio.load(body);
+			
+					let number;
+					$('.badge_craft_button_ctn .badge_craft_button.multicraft div').each(function(i, elem) {
+						let text = $(this).text(); // "Craft 5x"
+						let match = text.match(/\d+/); // Match the first sequence of digits
+						if (match) {
+							number = parseInt(match[0], 10);
+						}
+					});
+
+					if (number) {
+						b.num = number;
+					}
+
+					resolve();
+				});
+			}));
+			await new Promise((resolve, reject) => {
+				setTimeout(() => {
+					resolve();
+				}, 2000);
+			});
+		}
+
+		if (promises) {
+			await Promise.all(promises);
+		}
+
+		promises = []
+
+		for (let badge of badgeData) {
+			let {id, num} = badge;
+			promises.push(new Promise((resolve, reject) => {
+				self._myProfile({
+					method: 'POST',
+					endpoint: 'ajaxcraftbadge/',
+					json: true,
+					formData: { // it's multipart because lolvalve
+						sessionid: self.getSessionID(),
+						appid: id,
+						series: 1,
+						border_color: 0,
+						levels: num,
+					}
+				}, null, function(err, response, body) {
+					if (err || response.statusCode != 200) {
+						if (callback) {
+							reject(err || new Error('HTTP error ' + response.statusCode));
+						}
+			
+						return;
+					}
+			
+					if (body.success != 1) {
+						if (callback) {
+							reject(new Error(body.success ? 'Error ' + body.success : 'Request was not successful'));
+						}
+			
+						return;
+					} else {
+						badgesCrafted += num;
+						resolve();
+					}
+				});
+			}));
+			await new Promise((resolve, reject) => {
+				setTimeout(() => {
+					resolve();
+				}, 2000);
+			});
+		}
+		if (promises) {
+			await Promise.all(promises);
+		}
+		if (callback) {
+			callback(null, badgesCrafted);
+		}
+    });
+};
+
 SteamCommunity.prototype.uploadAvatar = function(image, format, callback) {
 	if(typeof format === 'function') {
 		callback = format;
