@@ -280,8 +280,7 @@ SteamCommunity.prototype.craftBadges = async function(callback) {
 			}
 		});
 		let badgesCrafted = 0;
-		let promises = []
-		console.log(badgeData.length);
+		let promises = [];
 
 		for (let badge of badgeData) {
 			let {id} = badge;
@@ -289,8 +288,6 @@ SteamCommunity.prototype.craftBadges = async function(callback) {
 			promises.push(new Promise((resolve, reject) => {
 				this._myProfile(`gamecards/${id}/`, null, function(err, response, body) {
 					if (err || response.statusCode != 200) {
-						console.log(response.statusCode)
-			
 						resolve();
 					}
 
