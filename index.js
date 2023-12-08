@@ -4,13 +4,6 @@ const RSA = require('node-bignumber').Key;
 const SteamID = require('steamid');
 const Cheerio = require('cheerio');
 
-// log if cheerio is not found
-if (!Cheerio) {
-	console.log('Cheerio not found, some features may not work');
-} else {
-	console.log('Cheerio found, all features should work');
-}
-
 const Helpers = require('./components/helpers.js');
 
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36";
