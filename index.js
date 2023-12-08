@@ -7,6 +7,8 @@ const Cheerio = require('cheerio');
 // log if cheerio is not found
 if (!Cheerio) {
 	console.log('Cheerio not found, some features may not work');
+} else {
+	console.log('Cheerio found, all features should work');
 }
 
 const Helpers = require('./components/helpers.js');
