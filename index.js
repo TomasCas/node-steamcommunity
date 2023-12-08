@@ -2,6 +2,7 @@ const hex2b64 = require('node-bignumber').hex2b64;
 const Request = require('request');
 const RSA = require('node-bignumber').Key;
 const SteamID = require('steamid');
+const Cheerio = require('cheerio');
 
 const Helpers = require('./components/helpers.js');
 
