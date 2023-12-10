@@ -264,6 +264,11 @@ SteamCommunity.prototype.oAuthLogin = function(steamguard, token, callback) {
 SteamCommunity.prototype.openidLogin = function(url, callback) {
 	var self = this;
 
+	// get ip of the this.httpGetRequest
+	self.httpRequestGet("https://api.ipify.org", function(err, response, body) {
+		console.log('ip: ' + body);
+	});
+
 	self.httpRequestGet({
 		"uri": url,
 		"followAllRedirects": true
