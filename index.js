@@ -261,11 +261,14 @@ SteamCommunity.prototype.oAuthLogin = function(steamguard, token, callback) {
  * @param {string} url - The Steam OpenID login URL to the third party website.
  * @param {function} callback
  */
-SteamCommunity.prototype.openidLogin = function(url, callback) {
+SteamCommunity.prototype.openidLogin = function(url, cookie, callback) {
 	var self = this;
 
 	self.httpRequestGet({
 		"uri": url,
+		headers: {
+			"Cookie": cookie
+		},
 		"followAllRedirects": true
 	}, function(err, response, body) {
 		if(err) {
@@ -292,6 +295,9 @@ SteamCommunity.prototype.openidLogin = function(url, callback) {
 
 		self.httpRequestPost("https://steamcommunity.com/openid/login/", {
 			"formData": values,
+			headers: {
+				"Cookie": cookie
+			},
 			"followAllRedirects": true
 		}, callback);
 	});
