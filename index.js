@@ -266,9 +266,7 @@ SteamCommunity.prototype.openidLogin = function(url, cookie, callback) {
 
 	self.httpRequestGet({
 		"uri": url,
-		headers: {
-			"Cookie": cookie
-		},
+		"Cookie": cookie,
 		"followAllRedirects": true
 	}, function(err, response, body) {
 		if(err) {
@@ -295,9 +293,7 @@ SteamCommunity.prototype.openidLogin = function(url, cookie, callback) {
 
 		self.httpRequestPost("https://steamcommunity.com/openid/login/", {
 			"formData": values,
-			headers: {
-				"Cookie": cookie
-			},
+			"Cookie": cookie,
 			"followAllRedirects": true
 		}, callback);
 	});
